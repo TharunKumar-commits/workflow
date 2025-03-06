@@ -1,0 +1,10 @@
+name: simple workflow
+on: push
+jobs:
+build:
+runs-on: ubuntu latest
+steps:
+-name: checkout repository
+uses: actions/checkout@v3
+-name: print hwllo
+run: echo "hello.githubs actiona!"

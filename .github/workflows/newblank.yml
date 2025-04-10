@@ -1,36 +1,89 @@
-# This is a basic workflow to help you get started with Actions
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Clock with Time Zones</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f4f4f9;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    .clock {
+      font-size: 1.5em;
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ccc;
+      display: inline-block;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .timezone {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Digital Clock with Time Zones</h1>
 
-name: CI
+  <div id="clocks"></div>
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  <script>
+    // Time zones to display
+    const timeZones = [
+      { name: "UTC", timeZone: "UTC" },
+      { name: "New York (EST)", timeZone: "America/New_York" },
+      { name: "London (GMT)", timeZone: "Europe/London" },
+      { name: "Tokyo (JST)", timeZone: "Asia/Tokyo" },
+      { name: "Sydney (AEDT)", timeZone: "Australia/Sydney" }
+    ];
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    const clocksContainer = document.getElementById('clocks');
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    // Function to create a clock for each time zone
+    function createClocks() {
+      timeZones.forEach(zone => {
+        const clockDiv = document.createElement('div');
+        clockDiv.className = 'clock';
+        clockDiv.id = `clock-${zone.name}`;
+        clockDiv.innerHTML = `
+          <div class="timezone">${zone.name}</div>
+          <div class="time" id="time-${zone.name}">00:00:00</div>
+        `;
+        clocksContainer.appendChild(clockDiv);
+      });
+    }
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+    // Function to update the time for each time zone
+    function updateClocks() {
+      timeZones.forEach(zone => {
+        const timeDiv = document.getElementById(`time-${zone.name}`);
+        const now = new Date();
+        const options = {
+          timeZone: zone.timeZone,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        };
+        const timeString = now.toLocaleTimeString('en-US', options);
+        timeDiv.textContent = timeString;
+      });
+    }
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    // Initialize clocks on page load
+    createClocks();
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    // Update clocks every second
+    setInterval(updateClocks, 1000);
+  </script>
+</body>
+</html>
